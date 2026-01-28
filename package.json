@@ -1,0 +1,21 @@
+{
+  "name": "stream-jukebox",
+  "version": "1.0.0",
+  "author": "Márton Visnovitz <vimtaai@pm.me>",
+  "license": "MIT",
+  "repository": "github:vimtaai/stream-jukebox",
+  "type": "module",
+  "description": "A music soundboard for online streaming providers",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "vue": "^3.4.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.3",
+    "vite": "^7.3.1"
+  }
+}
