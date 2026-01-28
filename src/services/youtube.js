@@ -32,7 +32,7 @@ export async function fetchVideoMetadata(videoUrl) {
   const videoId = extractVideoId(videoUrl);
   const encodedUrl = encodeURIComponent(videoUrl);
   const embedUrl = `https://www.youtube.com/embed/${videoId}?feature=oembed`;
-  const metadataUrl = `http://youtube.com/oembed?url=${encodedUrl}&format=json`;
+  const metadataUrl = `https://youtube.com/oembed?url=${encodedUrl}&format=json`;
 
   try {
     const response = await fetch(metadataUrl);
