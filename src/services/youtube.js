@@ -1,3 +1,24 @@
+import { ref } from "vue";
+
+const api = ref(null);
+
+export async function getYouTubeApi() {
+  if (api.value !== null) {
+    return api.value;
+  }
+
+  api.value = new Promise((resolve) => {
+    const apiScriptTag = document.createElement("script");
+    apiScriptTag.src = "https://www.youtube.com/iframe_api";
+    document.body.append(apiScriptTag);
+    window.onYouTubeIframeAPIReady = () => {
+      resolve(window.YT);
+    };
+  });
+
+  return api.value;
+}
+
 export function extractVideoId(rawUrl) {
   const url = URL.parse(rawUrl);
 

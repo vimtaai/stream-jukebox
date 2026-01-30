@@ -44,7 +44,9 @@
       </div>
     </menu>
 
-    <iframe ref="player" class="player" :src="embedUrl"></iframe>
+    <div class="player">
+      <div :id="playerId"></div>
+    </div>
   </div>
 </template>
 
@@ -193,7 +195,7 @@
 </style>
 
 <script setup>
-import { computed, nextTick, ref, useTemplateRef } from "vue";
+import { computed, nextTick, onMounted, ref, useTemplateRef } from "vue";
 
 import { tracks } from "../stores/tracks";
 import { settings } from "../stores/settings";
@@ -206,57 +208,64 @@ import pauseIcon from "../../assets/icons/pause.svg";
 import editIcon from "../../assets/icons/edit.svg";
 import trashIcon from "../../assets/icons/trash.svg";
 import youtubeIcon from "../../assets/icons/youtube.svg";
+import { getYouTubeApi } from "../services/youtube";
 
 const props = defineProps({
   track: { type: Object, required: true },
 });
 
+const refs = {
+  desciption: useTemplateRef("description"),
+};
+
+const player = ref(null);
+const isEditing = ref(false);
+const isReady = ref(false);
+const isPlaying = ref(false);
+const isControlsOpen = ref(false);
+
+const playerId = computed(() => `yt-${props.track.id}`);
 const thumbnailUrl = computed(() => {
   return `https://i.ytimg.com/vi/${props.track.videoId}/hqdefault.jpg`;
 });
 
-const embedUrl = computed(() => {
-  const origin = window.location.origin;
-  return `https://www.youtube.com/embed/${props.track.videoId}?feature=oembed&enablejsapi=1&origin=${origin}`;
+onMounted(async () => {
+  const { Player, PlayerState } = await getYouTubeApi();
+  const parameters = {
+    autoplay: 0,
+    controls: 0,
+    showinfo: 0,
+    modestbranding: 1,
+    enablejsapi: 1,
+    loop: 1,
+    origin: window.location.origin,
+  };
+
+  player.value = new Player(playerId.value, {
+    videoId: props.track.videoId,
+    playerVars: parameters,
+    events: {
+      onReady: (event) => {
+        isReady.value = true;
+      },
+      onStateChange: (event) => {
+        isPlaying.value = event.data === PlayerState.PLAYING;
+      },
+    },
+  });
+
+  console.log(player.value);
 });
 
-const refs = {
-  desciption: useTemplateRef("description"),
-  player: useTemplateRef("player"),
-};
-
-const isEditing = ref(false);
-const isPlaying = ref(false);
-const isControlsOpen = ref(false);
+function toggleButtons() {
+  isControlsOpen.value = !isControlsOpen.value;
+}
 
 async function setEditing() {
   isControlsOpen.value = false;
   isEditing.value = true;
   await nextTick();
   refs.desciption.value.focus();
-}
-
-function togglePlay() {
-  if (isEditing.value) {
-    return;
-  }
-
-  if (isPlaying.value === false) {
-    sendCommand("playVideo");
-    isPlaying.value = true;
-  } else {
-    sendCommand("pauseVideo");
-    isPlaying.value = false;
-  }
-}
-
-function toggleButtons() {
-  isControlsOpen.value = !isControlsOpen.value;
-}
-
-function deleteTrack(event) {
-  tracks.delete(props.track.id);
-  saveTracks(tracks.asMap);
 }
 
 function updateTitle(event) {
@@ -266,8 +275,22 @@ function updateTitle(event) {
   saveTracks(tracks.asMap);
 }
 
-function sendCommand(func, args = "") {
-  const command = { event: "command", func, args };
-  refs.player.value.contentWindow.postMessage(JSON.stringify(command), "*");
+function deleteTrack(event) {
+  tracks.delete(props.track.id);
+  saveTracks(tracks.asMap);
+}
+
+async function togglePlay() {
+  if (!isReady.value || isEditing.value) {
+    return;
+  }
+
+  if (isPlaying.value === false) {
+    player.value.playVideo();
+  } else {
+    player.value.pauseVideo();
+  }
+
+  isPlaying.value = player.value.getPlayerState() === 1;
 }
 </script>
