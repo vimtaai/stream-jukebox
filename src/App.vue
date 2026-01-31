@@ -12,24 +12,19 @@
 
 <style scoped>
 .layout {
-  display: flex;
-  flex-direction: column;
+  display: grid;
   margin: 0 auto;
   max-width: 800px;
   min-height: 100dvh;
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  flex-shrink: 1;
+  grid-template-rows:
+    1fr
+    auto
+    env(keyboard-inset-height, 0px);
 }
 
 .menu {
   align-items: flex-end;
   display: flex;
-  flex-shrink: 0;
   gap: var(--spacing-lg);
   justify-content: space-between;
   padding: var(--spacing-lg);
@@ -56,12 +51,15 @@ onMounted(async () => {
 async function getTracksFromUrlParams() {
   const params = new URLSearchParams(window.location.search);
   const youtubeVideos = params.getAll("yt");
-  console.log(youtubeVideos);
 
   for (const videoId of youtubeVideos) {
     const url = `https://www.youtube.com/watch?v=${videoId}`;
     const trackData = await fetchVideoMetadata(url);
     tracks.add(trackData);
   }
+
+  const newUrl = new URL(window.location.href);
+  newUrl.search = "";
+  window.history.replaceState(null, "", newUrl.toString());
 }
 </script>

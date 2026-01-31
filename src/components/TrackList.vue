@@ -10,7 +10,6 @@
   display: grid;
   gap: var(--spacing-lg);
   padding: var(--spacing-lg);
-  grid-auto-rows: max-content;
 
   &.list {
     grid-template-columns: 1fr;
