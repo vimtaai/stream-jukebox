@@ -75,9 +75,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-lg);
-    height: 500px;
     outline: none;
-    padding: var(--spacing-lg);
     position: absolute;
     inset: auto;
     width: 100%;
@@ -86,8 +84,10 @@
     .header {
       display: flex;
       align-items: center;
-      font-size: 1.25rem;
+      font-size: 1.15rem;
       justify-content: space-between;
+      border-bottom: solid 1px var(--color-border);
+      padding: var(--spacing-sm) var(--spacing-lg);
     }
 
     .info {
@@ -96,18 +96,25 @@
       flex-direction: column;
       flex-grow: 1;
       justify-content: center;
+      font-weight: bold;
+      padding: var(--spacing-lg);
     }
 
     .qrcode {
       margin: var(--spacing-lg) auto;
       width: 100%;
-      max-width: 300px;
+      max-width: 320px;
+      padding: var(--spacing-xl);
+      background: var(--color-background-control-strong);
+      border: solid 1px var(--color-border);
+      border-radius: var(--radius-md);
     }
 
     .share-row {
+      align-items: center;
       display: flex;
       gap: var(--spacing-lg);
-      align-items: center;
+      padding: var(--spacing-lg);
     }
   }
 }
