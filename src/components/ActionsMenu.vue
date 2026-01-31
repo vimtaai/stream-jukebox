@@ -1,6 +1,9 @@
 <template>
   <menu class="actions">
     <div :class="{ menu: true, hidden: !isActionsOpen }">
+      <button type="button" title="Share" @click="openShareDialog">
+        <img :src="ShareIcon" alt="Share" />
+      </button>
       <button type="button" title="Change Layout" @click.stop="toggleLayout">
         <img :src="layoutIcon" alt="Change Layout" />
       </button>
@@ -14,6 +17,8 @@
         <img :src="MoreIcon" alt="Menu" />
       </button>
     </div>
+
+    <ShareDialog ref="shareDialog" />
   </menu>
 </template>
 
@@ -44,18 +49,28 @@
 </style>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, useTemplateRef, computed } from "vue";
 import { settings } from "../stores/settings.js";
+import ShareDialog from "./ShareDialog.vue";
+
 import CloseIcon from "../../assets/icons/close.svg";
 import MoreIcon from "../../assets/icons/more.svg";
+import ShareIcon from "../../assets/icons/share.svg";
 import LayoutGridIcon from "../../assets/icons/layout-grid.svg";
 import LayoutListIcon from "../../assets/icons/layout-list.svg";
 
 const isActionsOpen = ref(false);
+const refs = {
+  shareDialog: useTemplateRef("shareDialog"),
+};
 
 const layoutIcon = computed(() =>
   settings.layout === "list" ? LayoutGridIcon : LayoutListIcon,
 );
+
+function openShareDialog() {
+  refs.shareDialog.value.open();
+}
 
 function toggleActions() {
   isActionsOpen.value = !isActionsOpen.value;

@@ -31,13 +31,27 @@ import { onMounted } from "vue";
 
 import { tracks } from "./stores/tracks.js";
 import { loadSavedTracks } from "./services/storage.js";
+import { fetchVideoMetadata } from "./services/youtube.js";
 
 import AddTrack from "./components/AddTrack.vue";
 import TrackList from "./components/TrackList.vue";
 import ActionsMenu from "./components/ActionsMenu.vue";
 
-onMounted(() => {
+onMounted(async () => {
   const savedTracks = loadSavedTracks();
   tracks.set(savedTracks);
+  await getTracksFromUrlParams();
 });
+
+async function getTracksFromUrlParams() {
+  const params = new URLSearchParams(window.location.search);
+  const youtubeVideos = params.getAll("yt");
+  console.log(youtubeVideos);
+
+  for (const videoId of youtubeVideos) {
+    const url = `https://www.youtube.com/watch?v=${videoId}`;
+    const trackData = await fetchVideoMetadata(url);
+    tracks.add(trackData);
+  }
+}
 </script>

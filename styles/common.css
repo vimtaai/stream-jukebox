@@ -97,6 +97,21 @@ button {
       background: var(--color-negative-strong);
     }
   }
+
+  &.muted {
+    background: transparent;
+    border-color: transparent;
+
+    &:hover {
+      background-color: var(--color-background-control-strong);
+      border-color: var(--color-border-strong);
+    }
+
+    &:focus {
+      border-color: var(--color-accent-strong);
+      outline-color: var(--color-accent);
+    }
+  }
 }
 
 input {
