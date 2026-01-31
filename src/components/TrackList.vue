@@ -8,7 +8,6 @@
 .tracks {
   align-items: start;
   display: grid;
-  flex-grow: 1;
   gap: var(--spacing-lg);
   padding: var(--spacing-lg);
   grid-auto-rows: max-content;

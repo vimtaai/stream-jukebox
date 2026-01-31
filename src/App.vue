@@ -1,11 +1,13 @@
 <template>
-  <main class="layout">
-    <TrackList />
+  <div class="layout">
+    <main class="content">
+      <TrackList />
+    </main>
     <section class="menu">
       <AddTrack />
       <ActionsMenu />
     </section>
-  </main>
+  </div>
 </template>
 
 <style scoped>
@@ -17,9 +19,17 @@
   min-height: 100dvh;
 }
 
+.content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+
 .menu {
   align-items: flex-end;
   display: flex;
+  flex-shrink: 0;
   gap: var(--spacing-lg);
   justify-content: space-between;
   padding: var(--spacing-lg);
