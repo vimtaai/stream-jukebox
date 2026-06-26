@@ -150,9 +150,20 @@ export function syncState(trackId, playerState) {
   }
 }
 
+let wasPlayingBeforeHide = false;
+
 document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "visible" && state.isPlaying) {
-    const player = players[state.currentTrackId];
-    if (player) player.playVideo();
+  if (document.visibilityState === "hidden" && state.isPlaying) {
+    wasPlayingBeforeHide = true;
+  }
+
+  if (document.visibilityState === "visible") {
+    if (wasPlayingBeforeHide) {
+      wasPlayingBeforeHide = false;
+      state.isPlaying = true;
+      const player = players[state.currentTrackId];
+      if (player) player.playVideo();
+      updateMediaSession();
+    }
   }
 });

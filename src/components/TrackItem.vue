@@ -110,11 +110,9 @@
   }
 
   .player {
-    position: fixed;
-    left: -9999px;
-    top: 0;
-    width: 0;
-    height: 0;
+    position: absolute;
+    width: 1px;
+    height: 1px;
     overflow: hidden;
     opacity: 0;
     pointer-events: none;

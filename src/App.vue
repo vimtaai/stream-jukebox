@@ -35,7 +35,7 @@
 import { onMounted } from "vue";
 
 import { tracks } from "./stores/tracks.js";
-import { loadSavedTracks } from "./services/storage.js";
+import { loadSavedTracks, saveTracks } from "./services/storage.js";
 import { fetchVideoMetadata } from "./services/youtube.js";
 
 import AddTrack from "./components/AddTrack.vue";
@@ -71,6 +71,8 @@ async function getTracksFromUrlParams() {
     }
     tracks.add(trackData);
   }
+
+  saveTracks(tracks.asMap);
 
   const newUrl = new URL(window.location.href);
   newUrl.search = "";
