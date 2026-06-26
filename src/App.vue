@@ -51,10 +51,24 @@ onMounted(async () => {
 async function getTracksFromUrlParams() {
   const params = new URLSearchParams(window.location.search);
   const youtubeVideos = params.getAll("yt");
+  const customTitles = params.getAll("t");
 
-  for (const videoId of youtubeVideos) {
+  for (const [index, videoId] of youtubeVideos.entries()) {
+    const existingTrack = tracks.asList.find(t => t.videoId === videoId);
+    if (existingTrack) {
+      const customTitle = customTitles[index];
+      if (customTitle) {
+        tracks.update(existingTrack.id, { title: customTitle });
+      }
+      continue;
+    }
+
     const url = `https://www.youtube.com/watch?v=${videoId}`;
     const trackData = await fetchVideoMetadata(url);
+    const customTitle = customTitles[index];
+    if (customTitle) {
+      trackData.title = customTitle;
+    }
     tracks.add(trackData);
   }
 

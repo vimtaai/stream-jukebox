@@ -167,6 +167,7 @@ function getShareUrl() {
 
   for (const track of tracks.asList) {
     currentUrl.searchParams.append("yt", track.videoId);
+    currentUrl.searchParams.append("t", track.title);
   }
 
   return currentUrl.toString();
