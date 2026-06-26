@@ -195,7 +195,7 @@
 </style>
 
 <script setup>
-import { computed, nextTick, onMounted, ref, useTemplateRef } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef } from "vue";
 
 import { tracks } from "../stores/tracks";
 import { settings } from "../stores/settings";
@@ -209,6 +209,13 @@ import editIcon from "../../assets/icons/edit.svg";
 import trashIcon from "../../assets/icons/trash.svg";
 import youtubeIcon from "../../assets/icons/youtube.svg";
 import { getYouTubeApi } from "../services/youtube";
+import {
+  state as playbackState,
+  registerPlayer,
+  unregisterPlayer,
+  togglePlay as playbackToggle,
+  syncState,
+} from "../services/playback";
 
 const props = defineProps({
   track: { type: Object, required: true },
@@ -221,7 +228,9 @@ const refs = {
 const player = ref(null);
 const isEditing = ref(false);
 const isReady = ref(false);
-const isPlaying = ref(false);
+const isPlaying = computed(() => {
+  return playbackState.currentTrackId === props.track.id && playbackState.isPlaying;
+});
 const isControlsOpen = ref(false);
 
 const playerId = computed(() => `yt-${props.track.id}`);
@@ -247,14 +256,20 @@ onMounted(async () => {
     events: {
       onReady: (event) => {
         isReady.value = true;
+        registerPlayer(props.track.id, {
+          playVideo: () => player.value.playVideo(),
+          pauseVideo: () => player.value.pauseVideo(),
+        });
       },
       onStateChange: (event) => {
-        isPlaying.value = event.data === PlayerState.PLAYING;
+        syncState(props.track.id, event.data);
       },
     },
   });
+});
 
-  console.log(player.value);
+onUnmounted(() => {
+  unregisterPlayer(props.track.id);
 });
 
 function toggleButtons() {
@@ -285,12 +300,6 @@ async function togglePlay() {
     return;
   }
 
-  if (isPlaying.value === false) {
-    player.value.playVideo();
-  } else {
-    player.value.pauseVideo();
-  }
-
-  isPlaying.value = player.value.getPlayerState() === 1;
+  playbackToggle(props.track.id);
 }
 </script>
