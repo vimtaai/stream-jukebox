@@ -110,7 +110,14 @@
   }
 
   .player {
-    display: none;
+    position: fixed;
+    left: -9999px;
+    top: 0;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
   }
 
   .controls {

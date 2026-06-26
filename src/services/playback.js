@@ -149,3 +149,10 @@ export function syncState(trackId, playerState) {
     nextTrack();
   }
 }
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && state.isPlaying) {
+    const player = players[state.currentTrackId];
+    if (player) player.playVideo();
+  }
+});
