@@ -10,5 +10,9 @@ import "../styles/common.css";
 initializeMobile();
 setupActionHandlers();
 
+if ("serviceWorker" in navigator && import.meta.env.PROD) {
+  navigator.serviceWorker.register("./sw.js");
+}
+
 const app = createApp(App);
 app.mount("#app");
