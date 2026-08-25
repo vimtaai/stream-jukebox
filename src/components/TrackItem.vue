@@ -252,6 +252,7 @@ onMounted(async () => {
     modestbranding: 1,
     enablejsapi: 1,
     loop: 1,
+    playsinline: 1,
     origin: window.location.origin,
   };
 

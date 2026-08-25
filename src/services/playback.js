@@ -48,7 +48,7 @@ function updateMediaSession() {
       : "none";
 }
 
-function setupActionHandlers() {
+export function setupActionHandlers() {
   if (actionHandlersSetup) return;
   if (!("mediaSession" in navigator)) return;
   actionHandlersSetup = true;
@@ -80,6 +80,27 @@ function setupActionHandlers() {
   });
 }
 
+let wakeLock = null;
+
+async function acquireWakeLock() {
+  if (!("wakeLock" in navigator)) return;
+  try {
+    wakeLock = await navigator.wakeLock.request("screen");
+    wakeLock.addEventListener("release", () => {
+      wakeLock = null;
+    });
+  } catch {
+    wakeLock = null;
+  }
+}
+
+async function releaseWakeLock() {
+  if (wakeLock) {
+    await wakeLock.release();
+    wakeLock = null;
+  }
+}
+
 export function registerPlayer(trackId, controls) {
   players[trackId] = controls;
 }
@@ -106,7 +127,7 @@ export function play(trackId) {
 
   state.isPlaying = true;
   updateMediaSession();
-  setupActionHandlers();
+  acquireWakeLock();
 }
 
 export function pause() {
@@ -114,6 +135,7 @@ export function pause() {
   if (player) player.pauseVideo();
   state.isPlaying = false;
   updateMediaSession();
+  releaseWakeLock();
 }
 
 export function togglePlay(trackId) {
@@ -153,17 +175,19 @@ export function syncState(trackId, playerState) {
 let wasPlayingBeforeHide = false;
 
 document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "hidden" && state.isPlaying) {
-    wasPlayingBeforeHide = true;
+  if (document.visibilityState === "hidden") {
+    if (state.isPlaying) {
+      wasPlayingBeforeHide = true;
+    }
+    releaseWakeLock();
+    return;
   }
 
-  if (document.visibilityState === "visible") {
-    if (wasPlayingBeforeHide) {
-      wasPlayingBeforeHide = false;
-      state.isPlaying = true;
-      const player = players[state.currentTrackId];
-      if (player) player.playVideo();
-      updateMediaSession();
-    }
+  if (wasPlayingBeforeHide) {
+    wasPlayingBeforeHide = false;
+    const player = players[state.currentTrackId];
+    if (player) player.playVideo();
+    updateMediaSession();
+    acquireWakeLock();
   }
 });
