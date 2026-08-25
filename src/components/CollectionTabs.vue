@@ -56,6 +56,7 @@
   gap: var(--spacing-xs);
   overflow-x: auto;
   padding: var(--spacing-lg) var(--spacing-lg) 0;
+  padding-top: calc(var(--spacing-lg) + env(safe-area-inset-top, 0px));
   scrollbar-width: none;
 
   &::-webkit-scrollbar {

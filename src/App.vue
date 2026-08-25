@@ -14,14 +14,19 @@
 <style scoped>
 .layout {
   display: grid;
+  height: 100dvh;
   margin: 0 auto;
   max-width: 800px;
-  min-height: 100dvh;
   grid-template-rows:
     auto
     1fr
     auto
     env(keyboard-inset-height, 0px);
+}
+
+.content {
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .menu {
@@ -30,6 +35,7 @@
   gap: var(--spacing-lg);
   justify-content: space-between;
   padding: var(--spacing-lg);
+  padding-bottom: calc(var(--spacing-lg) + env(safe-area-inset-bottom, 0px));
 }
 </style>
 
