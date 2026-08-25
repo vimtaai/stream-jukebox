@@ -69,6 +69,7 @@
 import { ref, nextTick } from "vue";
 
 import { tracks } from "../stores/tracks.js";
+import { collections } from "../stores/collections.js";
 import { saveTracks } from "../services/storage.js";
 import { extractVideoId, fetchVideoMetadata } from "../services/youtube.js";
 
@@ -105,6 +106,7 @@ async function addTrack(rawUrl) {
   }
 
   const trackData = await fetchVideoMetadata(rawUrl);
+  trackData.collectionId = collections.activeId;
   tracks.add(trackData);
   saveTracks(tracks.asMap);
   urlInput.value.value = "";

@@ -15,7 +15,11 @@ function getCurrentTrack() {
 }
 
 function getTrackList() {
-  return Object.values(tracks._tracks);
+  const currentTrack = getCurrentTrack();
+  if (!currentTrack) return [];
+  return Object.values(tracks._tracks).filter(
+    (t) => t.collectionId === currentTrack.collectionId,
+  );
 }
 
 function updateMediaSession() {

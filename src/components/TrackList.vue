@@ -1,6 +1,6 @@
 <template>
   <section :class="{ tracks: true, [settings.layout]: true }">
-    <TrackItem v-for="track in tracks.asList" :key="track.id" :track="track" />
+    <TrackItem v-for="track in activeTracks" :key="track.id" :track="track" />
   </section>
 </template>
 
@@ -22,7 +22,14 @@
 </style>
 
 <script setup>
+import { computed } from "vue";
+
 import TrackItem from "./TrackItem.vue";
 import { tracks } from "../stores/tracks";
 import { settings } from "../stores/settings";
+import { collections } from "../stores/collections";
+
+const activeTracks = computed(() =>
+  tracks.asList.filter((track) => track.collectionId === collections.activeId),
+);
 </script>

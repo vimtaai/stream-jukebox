@@ -1,5 +1,6 @@
 <template>
   <div class="layout">
+    <CollectionTabs />
     <main class="content">
       <TrackList />
     </main>
@@ -17,6 +18,7 @@
   max-width: 800px;
   min-height: 100dvh;
   grid-template-rows:
+    auto
     1fr
     auto
     env(keyboard-inset-height, 0px);
@@ -35,16 +37,32 @@
 import { onMounted } from "vue";
 
 import { tracks } from "./stores/tracks.js";
-import { loadSavedTracks, saveTracks } from "./services/storage.js";
+import { collections, DEFAULT_COLLECTION_ID } from "./stores/collections.js";
+import { loadSavedTracks, saveTracks, loadSavedCollections } from "./services/storage.js";
 import { fetchVideoMetadata } from "./services/youtube.js";
 
 import AddTrack from "./components/AddTrack.vue";
 import TrackList from "./components/TrackList.vue";
 import ActionsMenu from "./components/ActionsMenu.vue";
+import CollectionTabs from "./components/CollectionTabs.vue";
 
 onMounted(async () => {
+  const savedCollections = loadSavedCollections();
+  collections.set(savedCollections.collections, savedCollections.activeId);
+
   const savedTracks = loadSavedTracks();
+  let migrated = false;
+  for (const track of Object.values(savedTracks)) {
+    if (!track.collectionId) {
+      track.collectionId = DEFAULT_COLLECTION_ID;
+      migrated = true;
+    }
+  }
   tracks.set(savedTracks);
+  if (migrated) {
+    saveTracks(tracks.asMap);
+  }
+
   await getTracksFromUrlParams();
 });
 
@@ -65,6 +83,7 @@ async function getTracksFromUrlParams() {
 
     const url = `https://www.youtube.com/watch?v=${videoId}`;
     const trackData = await fetchVideoMetadata(url);
+    trackData.collectionId = collections.activeId;
     const customTitle = customTitles[index];
     if (customTitle) {
       trackData.title = customTitle;
