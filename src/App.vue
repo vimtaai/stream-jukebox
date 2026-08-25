@@ -14,7 +14,7 @@
 <style scoped>
 .layout {
   display: grid;
-  height: 100dvh;
+  height: var(--app-height, 100dvh);
   margin: 0 auto;
   max-width: 800px;
   grid-template-rows:
