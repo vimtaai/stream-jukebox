@@ -164,6 +164,13 @@ export function prevTrack() {
 
 export function syncState(trackId, playerState) {
   if (trackId !== state.currentTrackId) return;
+
+  if (playerState === 2 && state.isPlaying) {
+    const player = players[trackId];
+    if (player) player.playVideo();
+    return;
+  }
+
   state.isPlaying = playerState === 1;
   updateMediaSession();
 
